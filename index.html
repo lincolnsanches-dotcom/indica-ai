@@ -216,370 +216,368 @@
 
     <!-- LÓGICA JAVASCRIPT INTEGRADA COM SUPABASE -->
     <script>
-        const DEV_NAME = "Lincoln Sanches";
+    const DEV_NAME = "Lincoln Sanches";
 
-        // CONFIGURAÇÃO SUPABASE
-        const SUPABASE_URL = 'https://uuawefcpaadozaxxzset.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_Bwzo_DKnLrV4UUzN7nmYzQ_EK9l-R_i';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // CONFIGURAÇÃO SUPABASE
+    const SUPABASE_URL = 'https://uuawefcpaadozaxxzset.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_Bwzo_DKnLrV4UUzN7nmYzQ_EK9l-R_i';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const categories = [
-            { id: 'alimentacao', name: 'Alimentação e Doces', icon: '🍰' },
-            { id: 'pizzaria', name: 'Pizzarias', icon: '🍕' },
-            { id: 'estetica', name: 'Estética e Beleza', icon: '💅' },
-            { id: 'pets', name: 'Pet Shop, Banho e Tosa', icon: '🐶' },
-            { id: 'obras_manutencao', name: 'Obras, Pedreiros e Calhas', icon: '🧱' },
-            { id: 'marmoraria', name: 'Marmorarias', icon: '🪨' },
-            { id: 'eletrodomesticos', name: 'Conserto de Eletrodomésticos', icon: '🧺' },
-            { id: 'servicos_gerais', name: 'Contabilidade e Limpeza', icon: '🧹' },
-            { id: 'marceneiro', name: 'Marceneiro', icon: '🪵' },
-            { id: 'duto_coifa', name: 'Duto e Coifa', icon: '🏭' },
-            { id: 'encanador_gas', name: 'Encanador e Gás', icon: '🚰' },
-            { id: 'piscina', name: 'Piscina', icon: '🏊' },
-            { id: 'jardineiro', name: 'Corte de Mato / Jardineiro', icon: '🌱' },
-            { id: 'poco', name: 'Poço Artesiano', icon: '🕳️' }
-        ];
+    const categories = [
+        { id: 'alimentacao', name: 'Alimentação e Doces', icon: '🍰' },
+        { id: 'pizzaria', name: 'Pizzarias', icon: '🍕' },
+        { id: 'estetica', name: 'Estética e Beleza', icon: '💅' },
+        { id: 'pets', name: 'Pet Shop, Banho e Tosa', icon: '🐶' },
+        { id: 'obras_manutencao', name: 'Obras, Pedreiros e Calhas', icon: '🧱' },
+        { id: 'marmoraria', name: 'Marmorarias', icon: '🪨' },
+        { id: 'eletrodomesticos', name: 'Conserto de Eletrodomésticos', icon: '🧺' },
+        { id: 'servicos_gerais', name: 'Contabilidade e Limpeza', icon: '🧹' },
+        { id: 'marceneiro', name: 'Marceneiro', icon: '🪵' },
+        { id: 'duto_coifa', name: 'Duto e Coifa', icon: '🏭' },
+        { id: 'encanador_gas', name: 'Encanador e Gás', icon: '🚰' },
+        { id: 'piscina', name: 'Piscina', icon: '🏊' },
+        { id: 'jardineiro', name: 'Corte de Mato / Jardineiro', icon: '🌱' },
+        { id: 'poco', name: 'Poço Artesiano', icon: '🕳️' }
+    ];
 
-        const usefulPhones = [
-            { title: "Polícia Militar / Resgate", category: "Emergência", phone: "190", desc: "Ocorrências e resgate ambiental" },
-            { title: "SAMU", category: "Emergência", phone: "192", desc: "Atendimento médico de urgência" },
-            { title: "Corpo de Bombeiros", category: "Emergência", phone: "193", desc: "Resgate e incêndios" },
-            { title: "Portaria Serras", category: "Administração", phone: "11958334404", desc: "Atendimento de 07h às 19h (R. Serra da Capivara, 150)" },
-            { title: "SAAE Atibaia (Água)", category: "Serviços", phone: "08000112190", desc: "Vazamentos e abastecimento | Whats: (11) 4414-3523" },
-            { title: "Neoenergia Elektro", category: "Serviços", phone: "08007010102", desc: "Energia elétrica (Al. Prof. Lucas Nogueira Garcez, 1287)" },
-            { title: "Impacto Telecom", category: "Internet", phone: "08001234040", desc: "Provedor 24h (Al. Prof. Lucas Nogueira Garcez, 2680)" }
-        ];
+    const usefulPhones = [
+        { title: "Polícia Militar / Resgate", category: "Emergência", phone: "190", desc: "Ocorrências e resgate ambiental" },
+        { title: "SAMU", category: "Emergência", phone: "192", desc: "Atendimento médico de urgência" },
+        { title: "Corpo de Bombeiros", category: "Emergência", phone: "193", desc: "Resgate e incêndios" },
+        { title: "Portaria Serras", category: "Administração", phone: "11958334404", desc: "Atendimento de 07h às 19h (R. Serra da Capivara, 150)" },
+        { title: "SAAE Atibaia (Água)", category: "Serviços", phone: "08000112190", desc: "Vazamentos e abastecimento | Whats: (11) 4414-3523" },
+        { title: "Neoenergia Elektro", category: "Serviços", phone: "08007010102", desc: "Energia elétrica (Al. Prof. Lucas Nogueira Garcez, 1287)" },
+        { title: "Impacto Telecom", category: "Internet", phone: "08001234040", desc: "Provedor 24h (Al. Prof. Lucas Nogueira Garcez, 2680)" }
+    ];
 
-        let professionals = [];
+    let professionals = [];
 
-        async function carregarDadosDoSupabase() {
-            const { data, error } = await supabaseClient
-                .from('profissionais')
-                .select('*')
-                .order('created_at', { ascending: false });
+    async function carregarDadosDoSupabase() {
+        const { data, error } = await supabaseClient
+            .from('profissionais')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-            if (error) {
-                console.error('Erro ao buscar dados do Supabase:', error);
+        if (error) {
+            console.error('Erro ao buscar dados do Supabase:', error);
+            return;
+        }
+
+        professionals = data.map(item => ({
+            id: item.id,
+            name: item.nome,
+            category: item.categoria,
+            phone: item.telefone,
+            indicado_por: item.indicado_por,
+            reviews: item.reviews || []
+        }));
+
+        renderCategories();
+        populateCategorySelect();
+        renderUsefulPhones();
+    }
+
+    function getProfStats(prof) {
+        const count = prof.reviews ? prof.reviews.length : 0;
+        if (count === 0) {
+            return { count: 0, average: 0, hasMin: false };
+        }
+        const sum = prof.reviews.reduce((acc, r) => acc + Number(r.rating || 5), 0);
+        const avg = (sum / count).toFixed(1);
+        return { count, average: parseFloat(avg), hasMin: count >= 1 };
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarDadosDoSupabase();
+
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+            const container = document.getElementById('home-categories');
+            const title = document.getElementById('home-categories-title');
+
+            if (term === '') {
+                title.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Categorias Populares`;
+                renderCategories();
                 return;
             }
 
-            // Mapeia e formata os dados vindos do Supabase
-            professionals = data.map(item => ({
-                id: item.id,
-                name: item.nome,
-                category: item.categoria,
-                phone: item.telefone,
-                indicado_por: item.indicado_por,
-                reviews: item.reviews || []
-            }));
+            const filtered = categories.filter(c => c.name.toLowerCase().includes(term));
+            title.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> Resultados da Busca`;
+            container.innerHTML = '';
 
-            renderCategories();
-            populateCategorySelect();
-            renderUsefulPhones();
-        }
-
-        function getProfStats(prof) {
-            const count = prof.reviews ? prof.reviews.length : 0;
-            if (count === 0) {
-                return { count: 0, average: 0, hasMin: false };
-            }
-            const sum = prof.reviews.reduce((acc, r) => acc + Number(r.rating || 5), 0);
-            const avg = (sum / count).toFixed(1);
-            return { count, average: parseFloat(avg), hasMin: count >= 1 };
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            carregarDadosDoSupabase();
-
-            document.getElementById('search-input').addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase().trim();
-                const container = document.getElementById('home-categories');
-                const title = document.getElementById('home-categories-title');
-
-                if (term === '') {
-                    title.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Categorias Populares`;
-                    renderCategories();
-                    return;
-                }
-
-                const filtered = categories.filter(c => c.name.toLowerCase().includes(term));
-                title.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> Resultados da Busca`;
-                container.innerHTML = '';
-
-                if (filtered.length === 0) {
-                    container.innerHTML = `<p class="text-xs text-gray-500 col-span-2 text-center py-4">Nenhuma categoria encontrada.</p>`;
-                } else {
-                    filtered.forEach(cat => {
-                        container.innerHTML += `
-                            <div onclick="openCategory('${cat.id}')" class="bg-white p-4 rounded-xl shadow-sm flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 border border-emerald-100/60 transition">
-                                <span class="text-3xl mb-1">${cat.icon}</span>
-                                <span class="font-medium text-xs text-center text-gray-700">${cat.name}</span>
-                            </div>
-                        `;
-                    });
-                }
-            });
-
-            document.getElementById('indicate-form').addEventListener('submit', handleIndication);
-        });
-
-        function toggleNameInput() {
-            const type = document.getElementById('user-display-type').value;
-            const container = document.getElementById('public-name-container');
-            if (type === 'public') {
-                container.classList.remove('hidden');
+            if (filtered.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 col-span-2 text-center py-4">Nenhuma categoria encontrada.</p>`;
             } else {
-                container.classList.add('hidden');
-            }
-        }
-
-        function switchTab(screenId) {
-            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(screenId).classList.remove('hidden');
-
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-emerald-600');
-                btn.classList.add('text-gray-400');
-            });
-            
-            if(screenId === 'screen-home') document.getElementById('btn-home').className = "nav-btn flex flex-col items-center text-emerald-600";
-            if(screenId === 'screen-categories') document.getElementById('btn-categories').className = "nav-btn flex flex-col items-center text-emerald-600";
-            if(screenId === 'screen-useful-phones') document.getElementById('btn-phones').className = "nav-btn flex flex-col items-center text-emerald-600";
-            if(screenId === 'screen-indicate') document.getElementById('btn-indicate').className = "nav-btn flex flex-col items-center text-emerald-600";
-        }
-
-        function renderCategories() {
-            const homeContainer = document.getElementById('home-categories');
-            const fullContainer = document.getElementById('full-categories-list');
-            
-            homeContainer.innerHTML = '';
-            fullContainer.innerHTML = '';
-
-            categories.forEach((cat, index) => {
-                if(index < 6) {
-                    homeContainer.innerHTML += `
+                filtered.forEach(cat => {
+                    container.innerHTML += `
                         <div onclick="openCategory('${cat.id}')" class="bg-white p-4 rounded-xl shadow-sm flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 border border-emerald-100/60 transition">
                             <span class="text-3xl mb-1">${cat.icon}</span>
                             <span class="font-medium text-xs text-center text-gray-700">${cat.name}</span>
                         </div>
                     `;
+                });
+            }
+        });
+
+        document.getElementById('indicate-form').addEventListener('submit', handleIndication);
+    });
+
+    function toggleNameInput() {
+        const type = document.getElementById('user-display-type').value;
+        const container = document.getElementById('public-name-container');
+        if (type === 'public') {
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+
+    function switchTab(screenId) {
+        document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+        document.getElementById(screenId).classList.remove('hidden');
+
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('text-emerald-600');
+            btn.classList.add('text-gray-400');
+        });
+        
+        if(screenId === 'screen-home') document.getElementById('btn-home').className = "nav-btn flex flex-col items-center text-emerald-600";
+        if(screenId === 'screen-categories') document.getElementById('btn-categories').className = "nav-btn flex flex-col items-center text-emerald-600";
+        if(screenId === 'screen-useful-phones') document.getElementById('btn-phones').className = "nav-btn flex flex-col items-center text-emerald-600";
+        if(screenId === 'screen-indicate') document.getElementById('btn-indicate').className = "nav-btn flex flex-col items-center text-emerald-600";
+    }
+
+    function renderCategories() {
+        const homeContainer = document.getElementById('home-categories');
+        const fullContainer = document.getElementById('full-categories-list');
+        
+        homeContainer.innerHTML = '';
+        fullContainer.innerHTML = '';
+
+        categories.forEach((cat, index) => {
+            if(index < 6) {
+                homeContainer.innerHTML += `
+                    <div onclick="openCategory('${cat.id}')" class="bg-white p-4 rounded-xl shadow-sm flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 border border-emerald-100/60 transition">
+                        <span class="text-3xl mb-1">${cat.icon}</span>
+                        <span class="font-medium text-xs text-center text-gray-700">${cat.name}</span>
+                    </div>
+                `;
+            }
+
+            fullContainer.innerHTML += `
+                <div onclick="openCategory('${cat.id}')" class="bg-white p-3.5 rounded-xl shadow-sm flex items-center justify-between cursor-pointer border border-gray-100 hover:bg-emerald-50/50 transition">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">${cat.icon}</span>
+                        <span class="font-medium text-sm text-gray-700">${cat.name}</span>
+                    </div>
+                    <span class="text-emerald-500 font-bold">➔</span>
+                </div>
+            `;
+        });
+    }
+
+    function renderUsefulPhones() {
+        const container = document.getElementById('useful-phones-list');
+        container.innerHTML = '';
+
+        usefulPhones.forEach(item => {
+            container.innerHTML += `
+                <div class="bg-white p-3.5 rounded-xl border border-gray-200/80 shadow-2xs flex items-center justify-between gap-2">
+                    <div>
+                        <span class="text-[10px] uppercase font-extrabold tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">${item.category}</span>
+                        <h4 class="font-bold text-gray-800 text-sm mt-1">${item.title}</h4>
+                        <p class="text-[11px] text-gray-500">${item.desc}</p>
+                    </div>
+                    <a href="tel:${item.phone}" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1 shadow-sm transition shrink-0">
+                        📞 Ligar
+                    </a>
+                </div>
+            `;
+        });
+    }
+
+    function populateCategorySelect() {
+        const select = document.getElementById('prof-category');
+        select.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    }
+
+    function openCategory(catId) {
+        const cat = categories.find(c => c.id === catId);
+        document.getElementById('selected-category-title').innerText = `TOP ${cat ? cat.name.toUpperCase() : 'PROFISSIONAIS'}`;
+        
+        const filtered = professionals
+            .filter(p => p.category === catId)
+            .sort((a, b) => {
+                const statsA = getProfStats(a);
+                const statsB = getProfStats(b);
+                if (statsB.count !== statsA.count) return statsB.count - statsA.count;
+                return statsB.average - statsA.average;
+            });
+
+        const listContainer = document.getElementById('professionals-list');
+        listContainer.innerHTML = '';
+
+        if(filtered.length === 0) {
+            listContainer.innerHTML = `<p class="text-sm text-gray-500 text-center py-6">Nenhum profissional cadastrado nesta categoria ainda.</p>`;
+        } else {
+            filtered.forEach((prof, idx) => {
+                const stats = getProfStats(prof);
+                
+                let ratingBadge = `<span class="text-[11px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded border border-amber-200/60 font-medium">Sem avaliações</span>`;
+                if (stats.hasMin) {
+                    ratingBadge = `<span class="text-xs text-amber-500 font-bold">⭐ ${stats.average}</span>`;
                 }
 
-                fullContainer.innerHTML += `
-                    <div onclick="openCategory('${cat.id}')" class="bg-white p-3.5 rounded-xl shadow-sm flex items-center justify-between cursor-pointer border border-gray-100 hover:bg-emerald-50/50 transition">
-                        <div class="flex items-center gap-3">
-                            <span class="text-2xl">${cat.icon}</span>
-                            <span class="font-medium text-sm text-gray-700">${cat.name}</span>
+                const cleanPhone = String(prof.phone).replace(/\D/g, '');
+                const formattedPhone = cleanPhone.length >= 10 
+                    ? `(${cleanPhone.slice(-11, -9)}) ${cleanPhone.slice(-9, -4)}-${cleanPhone.slice(-4)}`
+                    : prof.phone;
+
+                const msg = encodeURIComponent(`Olá! Peguei seu contato pelo Indica Aí (Parque Serras de Atibaia).`);
+
+                listContainer.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-100/80 space-y-3">
+                        <div class="flex items-center justify-between cursor-pointer" onclick="openProfDetails(${prof.id})">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-xs">
+                                    ${idx + 1}º
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-sm">${prof.name}</h4>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        ${ratingBadge}
+                                        <span class="text-[11px] text-gray-400">• ${stats.count} relato(s)</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <span class="text-emerald-500 font-bold">➔</span>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
+                            <span class="font-semibold text-gray-600 flex items-center gap-1">
+                                📞 ${formattedPhone}
+                            </span>
+                            <div class="flex gap-2">
+                                <button onclick="openProfDetails(${prof.id})" class="text-gray-500 bg-gray-100 hover:bg-gray-200 px-2.5 py-1.5 rounded-lg font-medium">
+                                    Ver Relatos
+                                </button>
+                                <a href="https://wa.me/${cleanPhone}?text=${msg}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
+                                    💬 WhatsApp
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        function renderUsefulPhones() {
-            const container = document.getElementById('useful-phones-list');
-            container.innerHTML = '';
+        switchTab('screen-professionals');
+    }
 
-            usefulPhones.forEach(item => {
-                container.innerHTML += `
-                    <div class="bg-white p-3.5 rounded-xl border border-gray-200/80 shadow-2xs flex items-center justify-between gap-2">
-                        <div>
-                            <span class="text-[10px] uppercase font-extrabold tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">${item.category}</span>
-                            <h4 class="font-bold text-gray-800 text-sm mt-1">${item.title}</h4>
-                            <p class="text-[11px] text-gray-500">${item.desc}</p>
+    function openProfDetails(profId) {
+        const prof = professionals.find(p => p.id === profId);
+        if(!prof) return;
+
+        const stats = getProfStats(prof);
+        const cleanPhone = String(prof.phone).replace(/\D/g, '');
+        const msg = encodeURIComponent(`Olá! Peguei seu contato pelo Indica Aí (App desenvolvido por ${DEV_NAME} no Parque Serras de Atibaia).`);
+
+        let ratingDisplay = `<p class="text-xs text-amber-700 bg-amber-50 p-2 rounded-lg font-medium inline-block border border-amber-200/60">ℹ️ Profissional ainda não possui avaliações suficientes para exibir média de estrelas.</p>`;
+        if (stats.hasMin) {
+            ratingDisplay = `<div class="flex items-center gap-2">
+                <span class="text-2xl font-black text-amber-500">⭐ ${stats.average}</span>
+                <span class="text-xs text-gray-500">(${stats.count} avaliações)</span>
+            </div>`;
+        }
+
+        document.getElementById('prof-details-content').innerHTML = `
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-800">${prof.name}</h2>
+                    <span class="text-xs text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded">Categoria: ${categories.find(c => c.id === prof.category)?.name || 'Geral'}</span>
+                </div>
+            </div>
+            
+            <div class="pt-2 border-t border-gray-100">
+                ${ratingDisplay}
+            </div>
+
+            <a href="https://wa.me/${cleanPhone}?text=${msg}" target="_blank" 
+               class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow text-center block text-sm mt-3">
+                💬 Chamar no WhatsApp
+            </a>
+        `;
+
+        const reviewsList = document.getElementById('reviews-list');
+        document.getElementById('reviews-count').innerText = stats.count;
+        reviewsList.innerHTML = '';
+
+        if (stats.count === 0) {
+            reviewsList.innerHTML = `<p class="text-xs text-gray-400 py-3 text-center">Nenhum relato fornecido ainda.</p>`;
+        } else {
+            prof.reviews.forEach(r => {
+                reviewsList.innerHTML += `
+                    <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-2xs space-y-1">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-gray-700">${r.author || 'Morador do Serras'}</span>
+                            <span class="text-amber-500 font-bold">⭐ ${r.rating}.0</span>
                         </div>
-                        <a href="tel:${item.phone}" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1 shadow-sm transition shrink-0">
-                            📞 Ligar
-                        </a>
+                        <p class="text-xs text-gray-600 italic">"${r.comment || 'Indicou este profissional.'}"</p>
                     </div>
                 `;
             });
         }
 
-        function populateCategorySelect() {
-            const select = document.getElementById('prof-category');
-            select.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        switchTab('screen-prof-details');
+    }
+
+    async function handleIndication(e) {
+        e.preventDefault();
+
+        const userPhone = document.getElementById('user-phone').value.trim();
+        const displayType = document.getElementById('user-display-type').value;
+        const publicName = document.getElementById('user-public-name').value.trim();
+        
+        const profName = document.getElementById('prof-name').value.trim();
+        const profCategory = document.getElementById('prof-category').value;
+        const profPhone = document.getElementById('prof-phone').value.trim();
+        const profRating = Number(document.getElementById('prof-rating').value);
+        const profExp = document.getElementById('prof-experience').value.trim();
+
+        let authorName = "Morador Verificado (Serras)";
+        if (displayType === 'public' && publicName !== '') {
+            authorName = publicName;
         }
 
-        function openCategory(catId) {
-            const cat = categories.find(c => c.id === catId);
-            document.getElementById('selected-category-title').innerText = `TOP ${cat ? cat.name.toUpperCase() : 'PROFISSIONAIS'}`;
-            
-            const filtered = professionals
-                .filter(p => p.category === catId)
-                .sort((a, b) => {
-                    const statsA = getProfStats(a);
-                    const statsB = getProfStats(b);
-                    if (statsB.count !== statsA.count) return statsB.count - statsA.count;
-                    return statsB.average - statsA.average;
-                });
+        const newReview = {
+            author: authorName,
+            rating: profRating,
+            comment: profExp,
+            date: new Date().toISOString()
+        };
 
-            const listContainer = document.getElementById('professionals-list');
-            listContainer.innerHTML = '';
+        const { error } = await supabaseClient
+            .from('profissionais')
+            .insert([
+                {
+                    nome: profName,
+                    categoria: profCategory,
+                    telefone: profPhone,
+                    indicado_por: authorName,
+                    reviews: [newReview]
+                }
+            ]);
 
-            if(filtered.length === 0) {
-                listContainer.innerHTML = `<p class="text-sm text-gray-500 text-center py-6">Nenhum profissional cadastrado nesta categoria ainda.</p>`;
-            } else {
-                filtered.forEach((prof, idx) => {
-                    const stats = getProfStats(prof);
-                    
-                    let ratingBadge = `<span class="text-[11px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded border border-amber-200/60 font-medium">Sem avaliações</span>`;
-                    if (stats.hasMin) {
-                        ratingBadge = `<span class="text-xs text-amber-500 font-bold">⭐ ${stats.average}</span>`;
-                    }
-
-                    const cleanPhone = String(prof.phone).replace(/\D/g, '');
-                    const formattedPhone = cleanPhone.length >= 10 
-                        ? `(${cleanPhone.slice(-11, -9)}) ${cleanPhone.slice(-9, -4)}-${cleanPhone.slice(-4)}`
-                        : prof.phone;
-
-                    const msg = encodeURIComponent(`Olá! Peguei seu contato pelo Indica Aí (Parque Serras de Atibaia).`);
-
-                    listContainer.innerHTML += `
-                        <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-100/80 space-y-3">
-                            <div class="flex items-center justify-between cursor-pointer" onclick="openProfDetails(${prof.id})">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-xs">
-                                        ${idx + 1}º
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-gray-800 text-sm">${prof.name}</h4>
-                                        <div class="flex items-center gap-2 mt-0.5">
-                                            ${ratingBadge}
-                                            <span class="text-[11px] text-gray-400">• ${stats.count} relato(s)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
-                                <span class="font-semibold text-gray-600 flex items-center gap-1">
-                                    📞 ${formattedPhone}
-                                </span>
-                                <div class="flex gap-2">
-                                    <button onclick="openProfDetails(${prof.id})" class="text-gray-500 bg-gray-100 hover:bg-gray-200 px-2.5 py-1.5 rounded-lg font-medium">
-                                        Ver Relatos
-                                    </button>
-                                    <a href="https://wa.me/${cleanPhone}?text=${msg}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
-                                        💬 WhatsApp
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            switchTab('screen-professionals');
+        if (error) {
+            alert('Erro ao salvar no Supabase. Verifique a conexão.');
+            console.error(error);
+        } else {
+            alert('Indicação enviada e salva com sucesso!');
+            document.getElementById('indicate-form').reset();
+            toggleNameInput();
+            await carregarDadosDoSupabase();
+            openCategory(profCategory);
         }
-
-        function openProfDetails(profId) {
-            const prof = professionals.find(p => p.id === profId);
-            if(!prof) return;
-
-            const stats = getProfStats(prof);
-            const cleanPhone = String(prof.phone).replace(/\D/g, '');
-            const msg = encodeURIComponent(`Olá! Peguei seu contato pelo Indica Aí (App desenvolvido por ${DEV_NAME} no Parque Serras de Atibaia).`);
-
-            let ratingDisplay = `<p class="text-xs text-amber-700 bg-amber-50 p-2 rounded-lg font-medium inline-block border border-amber-200/60">ℹ️ Profissional ainda não possui avaliações suficientes para exibir média de estrelas.</p>`;
-            if (stats.hasMin) {
-                ratingDisplay = `<div class="flex items-center gap-2">
-                    <span class="text-2xl font-black text-amber-500">⭐ ${stats.average}</span>
-                    <span class="text-xs text-gray-500">(${stats.count} avaliações)</span>
-                </div>`;
-            }
-
-            document.getElementById('prof-details-content').innerHTML = `
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h2 class="text-lg font-bold text-gray-800">${prof.name}</h2>
-                        <span class="text-xs text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded">Categoria: ${categories.find(c => c.id === prof.category)?.name || 'Geral'}</span>
-                    </div>
-                </div>
-                
-                <div class="pt-2 border-t border-gray-100">
-                    ${ratingDisplay}
-                </div>
-
-                <a href="https://wa.me/${cleanPhone}?text=${msg}" target="_blank" 
-                   class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow text-center block text-sm mt-3">
-                    💬 Chamar no WhatsApp
-                </a>
-            `;
-
-            const reviewsList = document.getElementById('reviews-list');
-            document.getElementById('reviews-count').innerText = stats.count;
-            reviewsList.innerHTML = '';
-
-            if (stats.count === 0) {
-                reviewsList.innerHTML = `<p class="text-xs text-gray-400 py-3 text-center">Nenhum relato fornecido ainda.</p>`;
-            } else {
-                prof.reviews.forEach(r => {
-                    reviewsList.innerHTML += `
-                        <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-2xs space-y-1">
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="font-bold text-gray-700">${r.author || 'Morador do Serras'}</span>
-                                <span class="text-amber-500 font-bold">⭐ ${r.rating}.0</span>
-                            </div>
-                            <p class="text-xs text-gray-600 italic">"${r.comment || 'Indicou este profissional.'}"</p>
-                        </div>
-                    `;
-                });
-            }
-
-            switchTab('screen-prof-details');
-        }
-
-        async function handleIndication(e) {
-            e.preventDefault();
-
-            const userPhone = document.getElementById('user-phone').value.trim();
-            const displayType = document.getElementById('user-display-type').value;
-            const publicName = document.getElementById('user-public-name').value.trim();
-            
-            const profName = document.getElementById('prof-name').value.trim();
-            const profCategory = document.getElementById('prof-category').value;
-            const profPhone = document.getElementById('prof-phone').value.trim();
-            const profRating = Number(document.getElementById('prof-rating').value);
-            const profExp = document.getElementById('prof-experience').value.trim();
-
-            let authorName = "Morador Verificado (Serras)";
-            if (displayType === 'public' && publicName !== '') {
-                authorName = publicName;
-            }
-
-            const newReview = {
-                author: authorName,
-                rating: profRating,
-                comment: profExp,
-                date: new Date().toISOString()
-            };
-
-            // Insere diretamente na tabela do Supabase
-            const { error } = await supabaseClient
-                .from('profissionais')
-                .insert([
-                    {
-                        nome: profName,
-                        categoria: profCategory,
-                        telefone: profPhone,
-                        indicado_por: authorName,
-                        reviews: [newReview]
-                    }
-                ]);
-
-            if (error) {
-                alert('Erro ao salvar no Supabase. Verifique a conexão.');
-                console.error(error);
-            } else {
-                alert('Indicação enviada e salva com sucesso!');
-                document.getElementById('indicate-form').reset();
-                toggleNameInput();
-                await carregarDadosDoSupabase();
-                openCategory(profCategory);
-            }
-        }
-    </script>
+    }
+</script>
 </body>
 </html>
