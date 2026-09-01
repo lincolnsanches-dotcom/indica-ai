@@ -203,7 +203,7 @@
                     <div class="bg-emerald-50/60 p-3 rounded-xl border border-emerald-100 space-y-2">
                         <div>
                             <label class="block text-xs font-semibold text-emerald-800 mb-1">Seu WhatsApp (Morador)</label>
-                            <input type="tel" id="user-phone" required placeholder="(11) 99999-9999" class="w-full p-2.5 border border-emerald-200 bg-white rounded-lg text-sm font-medium focus:ring-2 focus:ring-emerald-500">
+                            <input type="tel" id="user-phone" required placeholder="(11) 99999-9999" maxlength="15" class="w-full p-2.5 border border-emerald-200 bg-white rounded-lg text-sm font-medium focus:ring-2 focus:ring-emerald-500">
                             <span class="text-[10px] text-emerald-600 mt-0.5 block">Usado para validação do sistema contra votos repetidos.</span>
                         </div>
 
@@ -235,7 +235,7 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">WhatsApp do Profissional (DDD + Número)</label>
-                        <input type="tel" id="prof-phone" placeholder="(11) 99999-9999" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
+                        <input type="tel" id="prof-phone" placeholder="(11) 99999-9999" maxlength="15" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
                     </div>
 
                     <div>
@@ -254,8 +254,8 @@
                         <textarea id="prof-experience" rows="3" placeholder="Conte aos vizinhos o que ele fez: pontualidade, qualidade, preço..." class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500"></textarea>
                     </div>
 
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md transition mt-4">
-                        Confirmar Indicação
+                    <button type="submit" id="submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md transition mt-4 flex justify-center items-center gap-2">
+                        <span>Confirmar Indicação</span>
                     </button>
                 </form>
             </div>
@@ -294,6 +294,8 @@
     const SUPABASE_KEY = 'sb_publishable_Bwzo_DKnLrV4UUzN7nmYzQ_EK9l-R_i';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    let isLoadingSupabase = true;
+
     function escapeHtml(str) {
         if (!str) return '';
         return String(str)
@@ -302,6 +304,22 @@
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
+    }
+
+    // Função de sanitização e formatação de telefone
+    function formatPhoneNumber(value) {
+        if (!value) return '';
+        const digits = value.replace(/\D/g, '');
+        if (digits.length === 0) return '';
+        if (digits.length <= 2) return `(${digits}`;
+        if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+        if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+        return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+    }
+
+    function getCleanDigits(value) {
+        if (!value) return '';
+        return String(value).replace(/\D/g, '');
     }
 
     function copyPix() {
@@ -356,6 +374,9 @@
     let professionals = [...initialProfessionals];
 
     async function carregarDadosDoSupabase() {
+        isLoadingSupabase = true;
+        renderRecentReviews();
+
         try {
             const { data, error } = await supabaseClient
                 .from('profissionais')
@@ -372,18 +393,21 @@
                     reviews: item.reviews || []
                 }));
                 
-                const dbIds = new Set(dbProfs.map(p => p.id));
-                const filteredInitials = initialProfessionals.filter(p => !dbIds.has(p.id));
+                const dbIds = new Set(dbProfs.map(p => String(p.id)));
+                const filteredInitials = initialProfessionals.filter(p => !dbIds.has(String(p.id)));
                 professionals = [...filteredInitials, ...dbProfs];
             } else {
                 professionals = [...initialProfessionals];
             }
         } catch (err) {
+            console.error("Erro ao carregar dados do Supabase:", err);
             professionals = [...initialProfessionals];
+        } finally {
+            isLoadingSupabase = false;
+            renderRecentReviews();
         }
 
         renderCategories();
-        renderRecentReviews();
         populateCategorySelect();
         renderUsefulPhones();
     }
@@ -399,6 +423,18 @@
     document.addEventListener('DOMContentLoaded', () => {
         carregarDadosDoSupabase();
 
+        // Aplicar máscaras nos campos de telefone
+        const userPhoneInput = document.getElementById('user-phone');
+        const profPhoneInput = document.getElementById('prof-phone');
+
+        [userPhoneInput, profPhoneInput].forEach(input => {
+            if (input) {
+                input.addEventListener('input', (e) => {
+                    e.target.value = formatPhoneNumber(e.target.value);
+                });
+            }
+        });
+
         document.getElementById('search-input').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase().trim();
             const container = document.getElementById('full-categories-list');
@@ -410,25 +446,54 @@
                 return;
             }
 
-            const filtered = categories.filter(c => c.name.toLowerCase().includes(term));
+            // 1. Filtra categorias pelo nome ou id
+            const filteredCategories = categories.filter(c => 
+                c.name.toLowerCase().includes(term) || c.id.toLowerCase().includes(term)
+            );
+
+            // 2. Filtra profissionais pelo nome ou relatos/descrição (ex: "pedreiro")
+            const filteredProfs = professionals.filter(p => {
+                const nameMatch = (p.name || '').toLowerCase().includes(term);
+                const reviewMatch = p.reviews && p.reviews.some(r => (r.comment || '').toLowerCase().includes(term));
+                return nameMatch || reviewMatch;
+            });
+
             title.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> Resultados da Busca`;
             container.innerHTML = '';
 
-            if (filtered.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">Nenhuma categoria encontrada.</p>`;
-            } else {
-                filtered.forEach(cat => {
-                    container.innerHTML += `
-                        <div onclick="openCategory('${cat.id}')" class="bg-white p-3.5 rounded-xl shadow-sm flex items-center justify-between cursor-pointer border border-gray-100 hover:bg-emerald-50/50 transition">
-                            <div class="flex items-center gap-3">
-                                <span class="text-2xl">${cat.icon}</span>
-                                <span class="font-medium text-sm text-gray-700">${escapeHtml(cat.name)}</span>
-                            </div>
-                            <span class="text-emerald-500 font-bold">➔</span>
-                        </div>
-                    `;
-                });
+            if (filteredCategories.length === 0 && filteredProfs.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">Nenhum profissional ou categoria encontrada para "${escapeHtml(term)}".</p>`;
+                return;
             }
+
+            // Exibe Categorias Encontradas
+            filteredCategories.forEach(cat => {
+                container.innerHTML += `
+                    <div onclick="openCategory('${cat.id}')" class="bg-white p-3.5 rounded-xl shadow-sm flex items-center justify-between cursor-pointer border border-gray-100 hover:bg-emerald-50/50 transition">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${cat.icon}</span>
+                            <span class="font-medium text-sm text-gray-700">${escapeHtml(cat.name)}</span>
+                        </div>
+                        <span class="text-emerald-500 font-bold">➔</span>
+                    </div>
+                `;
+            });
+
+            // Exibe Profissionais Encontrados Direta ou por Termo
+            filteredProfs.forEach(prof => {
+                container.innerHTML += `
+                    <div onclick="openProfDetails('${prof.id}')" class="bg-emerald-50/50 p-3.5 rounded-xl shadow-sm flex items-center justify-between cursor-pointer border border-emerald-200 hover:bg-emerald-100/50 transition">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">👤</span>
+                            <div>
+                                <span class="font-bold text-sm text-gray-800 block">${escapeHtml(prof.name)}</span>
+                                <span class="text-[11px] text-emerald-700">Profissional encontrado</span>
+                            </div>
+                        </div>
+                        <span class="text-emerald-600 font-bold">Ver ➔</span>
+                    </div>
+                `;
+            });
         });
 
         document.getElementById('indicate-form').addEventListener('submit', handleIndication);
@@ -462,6 +527,15 @@
     function renderRecentReviews() {
         const container = document.getElementById('home-recent-reviews');
         container.innerHTML = '';
+
+        if (isLoadingSupabase) {
+            container.innerHTML = `
+                <div class="bg-white p-3.5 rounded-xl border border-gray-100 shadow-2xs text-center py-4 space-y-2 animate-pulse">
+                    <p class="text-xs text-emerald-600 font-medium">✨ Carregando recomendações dos moradores...</p>
+                </div>
+            `;
+            return;
+        }
 
         let allReviews = [];
         professionals.forEach(p => {
@@ -514,7 +588,7 @@
         container.innerHTML = '';
 
         usefulPhones.forEach(item => {
-            const cleanPhone = String(item.phone || '').replace(/\D/g, '');
+            const cleanPhone = getCleanDigits(item.phone);
             container.innerHTML += `
                 <div class="bg-white p-3.5 rounded-xl border border-gray-200/80 shadow-2xs flex items-center justify-between gap-2">
                     <div>
@@ -558,8 +632,8 @@
             filtered.forEach((prof, idx) => {
                 const stats = getProfStats(prof);
                 let ratingBadge = `<span class="text-xs text-amber-500 font-bold">⭐ ${stats.average > 0 ? stats.average : '5.0'}</span>`;
-                const cleanPhone = String(prof.phone || '').replace(/\D/g, '');
-                const formattedPhone = prof.phone || 'Sem telefone';
+                const cleanPhone = getCleanDigits(prof.phone);
+                const formattedPhone = formatPhoneNumber(prof.phone) || prof.phone || 'Sem telefone';
                 const msg = encodeURIComponent(`Olá! Peguei seu contato pelo Indica Aí (Parque Serras de Atibaia).`);
 
                 listContainer.innerHTML += `
@@ -588,7 +662,7 @@
                                     Ver Relatos
                                 </button>
                                 ${cleanPhone ? `
-                                <a href="https://wa.me/${cleanPhone}?text=${msg}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
+                                <a href="https://wa.me/55${cleanPhone}?text=${msg}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
                                     💬 WhatsApp
                                 </a>` : ''}
                             </div>
@@ -606,7 +680,7 @@
         if(!prof) return;
 
         const stats = getProfStats(prof);
-        const cleanPhone = String(prof.phone || '').replace(/\D/g, '');
+        const cleanPhone = getCleanDigits(prof.phone);
         const msg = encodeURIComponent(`Olá! Peguei seu contato pelo Indica Aí (App desenvolvido por ${DEV_NAME} no Parque Serras de Atibaia).`);
 
         let ratingDisplay = `<div class="flex items-center gap-2">
@@ -630,7 +704,7 @@
             </div>
 
             ${cleanPhone ? `
-            <a href="https://wa.me/${cleanPhone}?text=${msg}" target="_blank" 
+            <a href="https://wa.me/55${cleanPhone}?text=${msg}" target="_blank" 
                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow text-center block text-sm mt-3">
                 💬 Chamar no WhatsApp
             </a>` : ''}
@@ -662,71 +736,108 @@
     async function handleIndication(e) {
         e.preventDefault();
 
-        const userPhone = document.getElementById('user-phone').value.trim();
-        const displayType = document.getElementById('user-display-type').value;
-        const publicName = document.getElementById('user-public-name').value.trim();
-        
-        const profName = document.getElementById('prof-name').value.trim();
-        const profCategory = document.getElementById('prof-category').value;
-        const profPhone = document.getElementById('prof-phone').value.trim();
-        const profRating = Number(document.getElementById('prof-rating').value);
-        const profExp = document.getElementById('prof-experience').value.trim();
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span>Processando...</span>`;
 
-        let authorName = "Morador Verificado (Serras)";
-        if (displayType === 'public' && publicName !== '') {
-            authorName = publicName;
-        }
+        try {
+            const rawUserPhone = document.getElementById('user-phone').value;
+            const userPhoneDigits = getCleanDigits(rawUserPhone);
 
-        const newReview = {
-            author: authorName,
-            rating: profRating,
-            comment: profExp,
-            date: new Date().toISOString()
-        };
-
-        const { data: existingProfs } = await supabaseClient
-            .from('profissionais')
-            .select('*')
-            .ilike('nome', profName);
-
-        if (existingProfs && existingProfs.length > 0) {
-            const profExistente = existingProfs[0];
-            const updatedReviews = [...(profExistente.reviews || []), newReview];
-
-            const { error } = await supabaseClient
-                .from('profissionais')
-                .update({ reviews: updatedReviews })
-                .eq('id', profExistente.id);
-
-            if (error) {
-                alert('Erro ao atualizar o relato no Supabase.');
-            } else {
-                alert('Sua avaliação foi adicionada ao profissional existente!');
-                document.getElementById('indicate-form').reset();
-                carregarDadosDoSupabase();
-                switchTab('screen-home');
+            if (userPhoneDigits.length < 10) {
+                alert('Por favor, informe um número de WhatsApp válido para o morador (DDD + Número).');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Confirmar Indicação</span>`;
+                return;
             }
-        } else {
-            const { error } = await supabaseClient
-                .from('profissionais')
-                .insert([
-                    {
-                        nome: profName,
-                        categoria: profCategory,
-                        telefone: profPhone,
-                        indicado_por: authorName,
-                        reviews: [newReview]
-                    }
-                ]);
 
-            if (error) {
-                alert('Erro ao salvar no Supabase.');
-            } else {
-                alert('Indicação enviada e salva com sucesso!');
-                document.getElementById('indicate-form').reset();
-                carregarDadosDoSupabase();
-                switchTab('screen-home');
+            const displayType = document.getElementById('user-display-type').value;
+            const publicName = document.getElementById('user-public-name').value.trim();
+            
+            const profName = document.getElementById('prof-name').value.trim();
+            const profCategory = document.getElementById('prof-category').value;
+            const rawProfPhone = document.getElementById('prof-phone').value;
+            const profPhoneDigits = getCleanDigits(rawProfPhone);
+            const formattedProfPhone = formatPhoneNumber(rawProfPhone);
+            const profRating = Number(document.getElementById('prof-rating').value);
+            const profExp = document.getElementById('prof-experience').value.trim();
+
+            let authorName = "Morador Verificado (Serras)";
+            if (displayType === 'public' && publicName !== '') {
+                authorName = publicName;
             }
+
+            const newReview = {
+                author: authorName,
+                rating: profRating,
+                comment: profExp,
+                date: new Date().toISOString()
+            };
+
+            // Busca melhorada contra duplicidade: consulta por nome semelhante ou por telefone do profissional
+            const { data: allProfs } = await supabaseClient
+                .from('profissionais')
+                .select('*');
+
+            let profExistente = null;
+
+            if (allProfs && allProfs.length > 0) {
+                // 1. Tenta identificar por telefone (se informado)
+                if (profPhoneDigits.length >= 10) {
+                    profExistente = allProfs.find(p => getCleanDigits(p.telefone) === profPhoneDigits);
+                }
+                
+                // 2. Se não encontrou por telefone, tenta por nome idêntico (case insensitive)
+                if (!profExistente) {
+                    const normProfName = profName.toLowerCase();
+                    profExistente = allProfs.find(p => String(p.nome).toLowerCase() === normProfName);
+                }
+            }
+
+            if (profExistente) {
+                const updatedReviews = [...(profExistente.reviews || []), newReview];
+
+                const { error } = await supabaseClient
+                    .from('profissionais')
+                    .update({ reviews: updatedReviews })
+                    .eq('id', profExistente.id);
+
+                if (error) {
+                    alert('Erro ao atualizar o relato no Supabase.');
+                } else {
+                    alert('Sua avaliação foi adicionada ao profissional existente!');
+                    document.getElementById('indicate-form').reset();
+                    await carregarDadosDoSupabase();
+                    switchTab('screen-home');
+                }
+            } else {
+                const { error } = await supabaseClient
+                    .from('profissionais')
+                    .insert([
+                        {
+                            nome: profName,
+                            categoria: profCategory,
+                            telefone: formattedProfPhone || rawProfPhone,
+                            indicado_por: authorName,
+                            reviews: [newReview]
+                        }
+                    ]);
+
+                if (error) {
+                    alert('Erro ao salvar no Supabase.');
+                } else {
+                    alert('Indicação enviada e salva com sucesso!');
+                    document.getElementById('indicate-form').reset();
+                    await carregarDadosDoSupabase();
+                    switchTab('screen-home');
+                }
+            }
+        } catch (err) {
+            console.error("Erro na indicação:", err);
+            alert('Ocorreu um erro ao processar sua indicação. Tente novamente.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<span>Confirmar Indicação</span>`;
         }
     }
     </script>
