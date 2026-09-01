@@ -36,25 +36,82 @@
     <!-- CONTAINER PRINCIPAL -->
     <main class="max-w-md mx-auto p-4">
 
-        <!-- TELA 1: INÍCIO / BUSCA -->
+        <!-- TELA 1: INÍCIO / ASSOCIAÇÃO -->
         <section id="screen-home" class="space-y-4">
-            <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-5 rounded-2xl shadow-md text-center relative overflow-hidden">
-                <div class="relative z-10">
-                    <h2 class="text-lg font-bold">Quem seus vizinhos recomendam?</h2>
-                    <p class="text-xs text-emerald-100 mt-1">Veja relatos reais de experiências e recomendações no Serras.</p>
-                    
-                    <div class="mt-4 relative">
-                        <input type="text" id="search-input" placeholder="O que você precisa hoje? (ex: Marceneiro)" 
-                               class="w-full px-4 py-3 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-400 shadow text-sm">
+            
+            <!-- PAINEL ASSOCIAÇÃO -->
+            <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-5 rounded-2xl shadow-md space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="bg-emerald-500/30 text-emerald-100 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-emerald-400/20">
+                        Associação de Moradores
+                    </span>
+                    <span class="text-xs text-emerald-100 font-medium">Serras I e II</span>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold">Informativos & Gestão</h2>
+                    <p class="text-xs text-emerald-100 mt-0.5">Fique por dentro das novidades, comunicados e ações do nosso condomínio.</p>
+                </div>
+                
+                <!-- CHAVE PIX RÁPIDA -->
+                <div class="bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/10 flex items-center justify-between text-xs mt-2">
+                    <div>
+                        <p class="text-[10px] text-emerald-100 uppercase font-semibold">Chave PIX da Associação</p>
+                        <p class="font-mono font-bold text-white tracking-wider">43.198.700/0001-45</p>
                     </div>
+                    <button onclick="copyPix()" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-bold px-3 py-1.5 rounded-lg text-xs shadow-sm transition">
+                        📋 Copiar
+                    </button>
                 </div>
             </div>
 
-            <div>
-                <h3 class="font-bold text-gray-700 text-sm mb-2.5 flex items-center gap-1.5" id="home-categories-title">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Categorias Populares
+            <!-- COMUNICADOS E AVISOS DA ASSOCIAÇÃO -->
+            <div class="space-y-2">
+                <h3 class="font-bold text-gray-700 text-sm flex items-center gap-1.5">
+                    📢 Comunicados Recentes
                 </h3>
-                <div class="grid grid-cols-2 gap-3" id="home-categories">
+                
+                <div class="bg-white p-4 rounded-xl border border-emerald-100 shadow-2xs space-y-1">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-emerald-700">Manutenção de Vias</span>
+                        <span class="text-[10px] text-gray-400">Administração</span>
+                    </div>
+                    <p class="text-xs text-gray-600">Lembramos a todos os moradores sobre os horários de recolhimento de poda e resíduos nas alamedas do Serras I e II.</p>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-emerald-100 shadow-2xs space-y-1">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-emerald-700">Atendimento da Portaria</span>
+                        <span class="text-[10px] text-gray-400">Portaria</span>
+                    </div>
+                    <p class="text-xs text-gray-600">Horário de atendimento presencial na administração: 07h às 19h (Rua Serra da Capivara, 150).</p>
+                </div>
+            </div>
+
+            <!-- ATALHOS RÁPIDOS DA ASSOCIAÇÃO -->
+            <div class="grid grid-cols-2 gap-3">
+                <a href="https://wa.me/5511933055509" target="_blank" class="bg-white p-3.5 rounded-xl border border-gray-100 shadow-2xs flex items-center gap-3 hover:bg-emerald-50/50 transition">
+                    <span class="text-2xl">💬</span>
+                    <div>
+                        <h4 class="font-bold text-xs text-gray-800">Falar com Adm</h4>
+                        <p class="text-[10px] text-gray-400">WhatsApp Oficial</p>
+                    </div>
+                </a>
+
+                <a href="https://parqueserrasdeatibaia1e2.com.br" target="_blank" class="bg-white p-3.5 rounded-xl border border-gray-100 shadow-2xs flex items-center gap-3 hover:bg-emerald-50/50 transition">
+                    <span class="text-2xl">🌐</span>
+                    <div>
+                        <h4 class="font-bold text-xs text-gray-800">Portal Oficial</h4>
+                        <p class="text-[10px] text-gray-400">Regulamentos/PDFs</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- FEED DE ÚLTIMAS INDICAÇÕES -->
+            <div class="pt-2">
+                <h3 class="font-bold text-gray-700 text-sm mb-2.5 flex items-center gap-1.5">
+                    ✨ Últimas Recomendações do Bairro
+                </h3>
+                <div id="home-recent-reviews" class="space-y-2">
                     <!-- Gerado via JS -->
                 </div>
             </div>
@@ -68,9 +125,21 @@
             </div>
         </section>
 
-        <!-- TELA 2: CATEGORIAS -->
+        <!-- TELA 2: CATEGORIAS E BUSCA DE PROFISSIONAIS -->
         <section id="screen-categories" class="hidden space-y-4">
-            <h2 class="text-lg font-bold text-gray-800">Todas as Categorias</h2>
+            
+            <!-- BARRA DE BUSCA CENTRALIZADA AQUI -->
+            <div class="bg-emerald-600 p-4 rounded-2xl shadow-sm text-white space-y-2">
+                <h2 class="text-base font-bold">Buscar Profissionais</h2>
+                <p class="text-xs text-emerald-100">Encontre especialistas indicados pelos moradores.</p>
+                <input type="text" id="search-input" placeholder="O que você precisa hoje? (ex: Marceneiro)" 
+                       class="w-full px-4 py-2.5 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-400 shadow text-sm">
+            </div>
+
+            <h3 class="font-bold text-gray-700 text-sm flex items-center gap-1.5" id="categories-title">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Todas as Categorias
+            </h3>
+
             <div class="grid grid-cols-1 gap-2.5" id="full-categories-list">
                 <!-- Gerado via JS -->
             </div>
@@ -78,6 +147,10 @@
 
         <!-- TELA 3: LISTA DE PROFISSIONAIS (RANKING) -->
         <section id="screen-professionals" class="hidden space-y-4">
+            <button onclick="switchTab('screen-categories')" class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg flex items-center gap-1 hover:bg-emerald-100 transition">
+                ⬅ Voltar para Categorias
+            </button>
+
             <div class="flex justify-between items-center">
                 <h2 class="text-base font-bold text-gray-800" id="selected-category-title">Profissionais</h2>
                 <span class="text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md font-medium">Por indicações</span>
@@ -127,7 +200,6 @@
                 <p class="text-xs text-gray-500 mb-4">Compartilhe sua experiência. Seu WhatsApp é usado apenas internamente para evitar duplicidade.</p>
 
                 <form id="indicate-form" class="space-y-3.5">
-                    <!-- VALIDAÇÃO DO MORADOR -->
                     <div class="bg-emerald-50/60 p-3 rounded-xl border border-emerald-100 space-y-2">
                         <div>
                             <label class="block text-xs font-semibold text-emerald-800 mb-1">Seu WhatsApp (Morador)</label>
@@ -135,7 +207,6 @@
                             <span class="text-[10px] text-emerald-600 mt-0.5 block">Usado para validação do sistema contra votos repetidos.</span>
                         </div>
 
-                        <!-- OPÇÃO PÚBLICA / ANÔNIMA -->
                         <div>
                             <label class="block text-xs font-semibold text-emerald-900 mb-1">Como deseja que sua indicação apareça no relato?</label>
                             <select id="user-display-type" class="w-full p-2.5 border border-emerald-200 bg-white rounded-lg text-sm focus:ring-2 focus:ring-emerald-500" onchange="toggleNameInput()">
@@ -223,7 +294,6 @@
     const SUPABASE_KEY = 'sb_publishable_Bwzo_DKnLrV4UUzN7nmYzQ_EK9l-R_i';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // FUNÇÃO UTILITÁRIA PARA SANITIZAR TEXTOS (PROTEÇÃO CONTRA XSS E QUEBRA DE INTERFACE)
     function escapeHtml(str) {
         if (!str) return '';
         return String(str)
@@ -232,6 +302,11 @@
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
+    }
+
+    function copyPix() {
+        navigator.clipboard.writeText('43.198.700/0001-45');
+        alert('Chave PIX da Associação copiada!');
     }
 
     const categories = [
@@ -247,123 +322,25 @@
         { id: 'utilidade_publica', name: 'Guia Útil e Serviços Públicos', icon: '🏛️' }
     ];
 
-    // PROFISSIONAIS PRIVADOS
     const initialProfessionals = [
-        {
-            id: 'init-1',
-            name: 'William Serras 2 (Marcenaria)',
-            category: 'marceneiro',
-            phone: '+5511947357954',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Marcenaria e Móveis Planejados' }]
-        },
-        {
-            id: 'init-2',
-            name: 'AMR Planejados Almir',
-            category: 'marceneiro',
-            phone: '+5511995750646',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Marcenaria / Móveis Planejados' }]
-        },
-        {
-            id: 'init-3',
-            name: 'Ricardo Primo - RS Móveis Planejados',
-            category: 'marceneiro',
-            phone: '+5511976060220',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Instagram: https://www.instagram.com/rs_moveis.planejados' }]
-        },
-        {
-            id: 'init-4',
-            name: 'Cássio Rufos (Coifa/Duto)',
-            category: 'duto_coifa',
-            phone: '+5511999966447',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Instalação de Duto e Coifa (Alt: 99966-4417)' }]
-        },
-        {
-            id: 'init-5',
-            name: 'Paulo Renato Eletricista',
-            category: 'eletrica_ar',
-            phone: '+5511987675169',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Eletricista, Ar-condicionado, Pressurizador' }]
-        },
-        {
-            id: 'init-6',
-            name: 'Roberto Encanamento',
-            category: 'encanador_gas',
-            phone: '+5511957856096',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Encanador / Gás' }]
-        },
-        {
-            id: 'init-7',
-            name: 'Oscar Ledier (Encanamento Gás Atibaia)',
-            category: 'encanador_gas',
-            phone: '+5511999551837',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Gás e Encanamento' }]
-        },
-        {
-            id: 'init-8',
-            name: 'Pereira Pedreiro 3 (Poço Artesiano)',
-            category: 'obras_poco',
-            phone: '+5511968658939',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Poço Artesiano / Obras' }]
-        },
-        {
-            id: 'init-9',
-            name: 'Vavá Piscineiro',
-            category: 'piscina',
-            phone: '+5511972626591',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Manutenção de Piscina / Troca de areia do filtro' }]
-        },
-        {
-            id: 'init-10',
-            name: 'Tia Preta (Van Escolar)',
-            category: 'transporte_escolar',
-            phone: '+5511996996121',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Transporte Escolar' }]
-        },
-        {
-            id: 'init-11',
-            name: 'Stephannie Unhas',
-            category: 'estetica',
-            phone: '+5511943204707',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Manicure' }]
-        },
-        {
-            id: 'init-12',
-            name: 'Rosilene Forte Barreto (Podóloga)',
-            category: 'estetica',
-            phone: '+5511933192753',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Manicure e Podóloga - Bairro Morumbi' }]
-        },
-        {
-            id: 'init-13',
-            name: 'Pietra Nails',
-            category: 'estetica',
-            phone: '+5511996222934',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Alongamento em Gel / Unhas' }]
-        },
-        {
-            id: 'init-14',
-            name: 'Patrícia Ellen Cabeleireira',
-            category: 'estetica',
-            phone: '+5511992114749',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Cabeleireira' }]
-        },
-        {
-            id: 'init-15',
-            name: 'Lavanderia Ma&Re (Alessandra)',
-            category: 'limpeza_lavanderia',
-            phone: '+5511958918412',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Lavagem de Tapetes e Roupas' }]
-        },
-        {
-            id: 'init-16',
-            name: 'Famm Clean',
-            category: 'limpeza_lavanderia',
-            phone: '+5511996054511',
-            reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Higienização de Tapetes, Cortinas, Edredom e Vidros' }]
-        }
+        { id: 'init-1', name: 'William Serras 2 (Marcenaria)', category: 'marceneiro', phone: '+5511947357954', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Marcenaria e Móveis Planejados' }] },
+        { id: 'init-2', name: 'AMR Planejados Almir', category: 'marceneiro', phone: '+5511995750646', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Marcenaria / Móveis Planejados' }] },
+        { id: 'init-3', name: 'Ricardo Primo - RS Móveis Planejados', category: 'marceneiro', phone: '+5511976060220', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Instagram: https://www.instagram.com/rs_moveis.planejados' }] },
+        { id: 'init-4', name: 'Cássio Rufos (Coifa/Duto)', category: 'duto_coifa', phone: '+5511999966447', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Instalação de Duto e Coifa (Alt: 99966-4417)' }] },
+        { id: 'init-5', name: 'Paulo Renato Eletricista', category: 'eletrica_ar', phone: '+5511987675169', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Eletricista, Ar-condicionado, Pressurizador' }] },
+        { id: 'init-6', name: 'Roberto Encanamento', category: 'encanador_gas', phone: '+5511957856096', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Encanador / Gás' }] },
+        { id: 'init-7', name: 'Oscar Ledier (Encanamento Gás Atibaia)', category: 'encanador_gas', phone: '+5511999551837', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Gás e Encanamento' }] },
+        { id: 'init-8', name: 'Pereira Pedreiro 3 (Poço Artesiano)', category: 'obras_poco', phone: '+5511968658939', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Poço Artesiano / Obras' }] },
+        { id: 'init-9', name: 'Vavá Piscineiro', category: 'piscina', phone: '+5511972626591', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Manutenção de Piscina / Troca de areia do filtro' }] },
+        { id: 'init-10', name: 'Tia Preta (Van Escolar)', category: 'transporte_escolar', phone: '+5511996996121', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Transporte Escolar' }] },
+        { id: 'init-11', name: 'Stephannie Unhas', category: 'estetica', phone: '+5511943204707', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Manicure' }] },
+        { id: 'init-12', name: 'Rosilene Forte Barreto (Podóloga)', category: 'estetica', phone: '+5511933192753', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Manicure e Podóloga - Bairro Morumbi' }] },
+        { id: 'init-13', name: 'Pietra Nails', category: 'estetica', phone: '+5511996222934', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Alongamento em Gel / Unhas' }] },
+        { id: 'init-14', name: 'Patrícia Ellen Cabeleireira', category: 'estetica', phone: '+5511992114749', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Cabeleireira' }] },
+        { id: 'init-15', name: 'Lavanderia Ma&Re (Alessandra)', category: 'limpeza_lavanderia', phone: '+5511958918412', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Lavagem de Tapetes e Roupas' }] },
+        { id: 'init-16', name: 'Famm Clean', category: 'limpeza_lavanderia', phone: '+5511996054511', reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Higienização de Tapetes, Cortinas, Edredom e Vidros' }] }
     ];
 
-    // LISTA COMPLETA DA ABA ÚTEIS
     const usefulPhones = [
         { title: "Polícia Militar / Resgate", category: "Emergência", phone: "190", desc: "Ocorrências e resgate ambiental" },
         { title: "SAMU", category: "Emergência", phone: "192", desc: "Atendimento médico de urgência" },
@@ -406,15 +383,14 @@
         }
 
         renderCategories();
+        renderRecentReviews();
         populateCategorySelect();
         renderUsefulPhones();
     }
 
     function getProfStats(prof) {
         const count = prof.reviews ? prof.reviews.length : 0;
-        if (count === 0) {
-            return { count: 0, average: 0, hasMin: false };
-        }
+        if (count === 0) return { count: 0, average: 0, hasMin: false };
         const sum = prof.reviews.reduce((acc, r) => acc + Number(r.rating || 5), 0);
         const avg = (sum / count).toFixed(1);
         return { count, average: parseFloat(avg), hasMin: count >= 1 };
@@ -425,11 +401,11 @@
 
         document.getElementById('search-input').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase().trim();
-            const container = document.getElementById('home-categories');
-            const title = document.getElementById('home-categories-title');
+            const container = document.getElementById('full-categories-list');
+            const title = document.getElementById('categories-title');
 
             if (term === '') {
-                title.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Categorias Populares`;
+                title.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Todas as Categorias`;
                 renderCategories();
                 return;
             }
@@ -439,13 +415,16 @@
             container.innerHTML = '';
 
             if (filtered.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500 col-span-2 text-center py-4">Nenhuma categoria encontrada.</p>`;
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">Nenhuma categoria encontrada.</p>`;
             } else {
                 filtered.forEach(cat => {
                     container.innerHTML += `
-                        <div onclick="openCategory('${cat.id}')" class="bg-white p-4 rounded-xl shadow-sm flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 border border-emerald-100/60 transition">
-                            <span class="text-3xl mb-1">${cat.icon}</span>
-                            <span class="font-medium text-xs text-center text-gray-700">${escapeHtml(cat.name)}</span>
+                        <div onclick="openCategory('${cat.id}')" class="bg-white p-3.5 rounded-xl shadow-sm flex items-center justify-between cursor-pointer border border-gray-100 hover:bg-emerald-50/50 transition">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">${cat.icon}</span>
+                                <span class="font-medium text-sm text-gray-700">${escapeHtml(cat.name)}</span>
+                            </div>
+                            <span class="text-emerald-500 font-bold">➔</span>
                         </div>
                     `;
                 });
@@ -480,23 +459,44 @@
         if(screenId === 'screen-indicate') document.getElementById('btn-indicate').className = "nav-btn flex flex-col items-center text-emerald-600";
     }
 
+    function renderRecentReviews() {
+        const container = document.getElementById('home-recent-reviews');
+        container.innerHTML = '';
+
+        let allReviews = [];
+        professionals.forEach(p => {
+            if (p.reviews) {
+                p.reviews.forEach(r => {
+                    allReviews.push({ profName: p.name, profId: p.id, ...r });
+                });
+            }
+        });
+
+        const recent = allReviews.slice(0, 3);
+        if (recent.length === 0) {
+            container.innerHTML = `<p class="text-xs text-gray-400 py-2">Nenhum relato recente registrado.</p>`;
+            return;
+        }
+
+        recent.forEach(r => {
+            container.innerHTML += `
+                <div onclick="openProfDetails('${r.profId}')" class="bg-white p-3 rounded-xl border border-gray-100 shadow-2xs space-y-1 cursor-pointer hover:bg-emerald-50/30 transition">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-gray-800">${escapeHtml(r.profName)}</span>
+                        <span class="text-amber-500 font-bold">⭐ ${escapeHtml(r.rating)}.0</span>
+                    </div>
+                    <p class="text-xs text-gray-600 italic">"${escapeHtml(r.comment || 'Recomendado por um vizinho.')}"</p>
+                    <p class="text-[10px] text-emerald-600 font-medium pt-0.5">— ${escapeHtml(r.author || 'Morador do Serras')}</p>
+                </div>
+            `;
+        });
+    }
+
     function renderCategories() {
-        const homeContainer = document.getElementById('home-categories');
         const fullContainer = document.getElementById('full-categories-list');
-        
-        homeContainer.innerHTML = '';
         fullContainer.innerHTML = '';
 
-        categories.forEach((cat, index) => {
-            if(index < 6) {
-                homeContainer.innerHTML += `
-                    <div onclick="openCategory('${cat.id}')" class="bg-white p-4 rounded-xl shadow-sm flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 border border-emerald-100/60 transition">
-                        <span class="text-3xl mb-1">${cat.icon}</span>
-                        <span class="font-medium text-xs text-center text-gray-700">${escapeHtml(cat.name)}</span>
-                    </div>
-                `;
-            }
-
+        categories.forEach((cat) => {
             fullContainer.innerHTML += `
                 <div onclick="openCategory('${cat.id}')" class="bg-white p-3.5 rounded-xl shadow-sm flex items-center justify-between cursor-pointer border border-gray-100 hover:bg-emerald-50/50 transition">
                     <div class="flex items-center gap-3">
@@ -684,7 +684,6 @@
             date: new Date().toISOString()
         };
 
-        // LÓGICA ANTI-DUPLICIDADE: Busca se o profissional já existe no banco Supabase
         const { data: existingProfs } = await supabaseClient
             .from('profissionais')
             .select('*')
@@ -701,7 +700,6 @@
 
             if (error) {
                 alert('Erro ao atualizar o relato no Supabase.');
-                console.error(error);
             } else {
                 alert('Sua avaliação foi adicionada ao profissional existente!');
                 document.getElementById('indicate-form').reset();
@@ -722,8 +720,7 @@
                 ]);
 
             if (error) {
-                alert('Erro ao salvar no Supabase. Verifique a conexão.');
-                console.error(error);
+                alert('Erro ao salvar no Supabase.');
             } else {
                 alert('Indicação enviada e salva com sucesso!');
                 document.getElementById('indicate-form').reset();
