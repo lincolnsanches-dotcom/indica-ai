@@ -111,8 +111,8 @@
         <!-- TELA 4: TELEFONES ÚTEIS -->
         <section id="screen-useful-phones" class="hidden space-y-4">
             <div class="bg-emerald-600 text-white p-4 rounded-2xl shadow-sm">
-                <h2 class="text-base font-bold">📞 Telefones Úteis & Emergência</h2>
-                <p class="text-xs text-emerald-100">Contatos de emergência e serviços essenciais para o Parque Serras de Atibaia.</p>
+                <h2 class="text-base font-bold">📞 Telefones Úteis & Serviços Públicos</h2>
+                <p class="text-xs text-emerald-100">Contatos de emergência, utilidade pública e serviços para o Parque Serras de Atibaia.</p>
             </div>
 
             <div class="space-y-2.5" id="useful-phones-list">
@@ -223,6 +223,17 @@
     const SUPABASE_KEY = 'sb_publishable_Bwzo_DKnLrV4UUzN7nmYzQ_EK9l-R_i';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // FUNÇÃO UTILITÁRIA PARA SANITIZAR TEXTOS (PROTEÇÃO CONTRA XSS E QUEBRA DE INTERFACE)
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     const categories = [
         { id: 'marceneiro', name: 'Marcenaria / Móveis Planejados', icon: '🪵' },
         { id: 'eletrica_ar', name: 'Eletricista, Ar e Pressurizador', icon: '⚡' },
@@ -236,7 +247,7 @@
         { id: 'utilidade_publica', name: 'Guia Útil e Serviços Públicos', icon: '🏛️' }
     ];
 
-    // LISTA REAIS EXTRAÍDA DO SEU CONTATOS.JSON E CADASTRAR.PY
+    // PROFISSIONAIS PRIVADOS
     const initialProfessionals = [
         {
             id: 'init-1',
@@ -349,52 +360,20 @@
             category: 'limpeza_lavanderia',
             phone: '+5511996054511',
             reviews: [{ author: 'Morador do Serras', rating: 5, comment: 'Higienização de Tapetes, Cortinas, Edredom e Vidros' }]
-        },
-        {
-            id: 'init-17',
-            name: 'SAAE Atibaia (Água e Esgoto)',
-            category: 'utilidade_publica',
-            phone: '08000112190',
-            reviews: [{ author: 'Serviço Público', rating: 5, comment: 'Emergências e serviços de Água e Esgoto' }]
-        },
-        {
-            id: 'init-18',
-            name: 'Elektro Atibaia (Energia)',
-            category: 'utilidade_publica',
-            phone: '08007010102',
-            reviews: [{ author: 'Serviço Público', rating: 5, comment: 'Companhia de Energia Elétrica' }]
-        },
-        {
-            id: 'init-19',
-            name: 'Ecoponto Tanque Atibaia',
-            category: 'utilidade_publica',
-            phone: '',
-            reviews: [{ author: 'Serviço Público', rating: 5, comment: 'Rua João Cifarelli, 2290. Seg-Sex 7h-17h, Sáb 7h-12h. Aceita entulhos, podas, gesso e madeira.' }]
-        },
-        {
-            id: 'init-20',
-            name: 'Polícia Ambiental (Resgate Animais)',
-            category: 'utilidade_publica',
-            phone: '190',
-            reviews: [{ author: 'Emergência', rating: 5, comment: 'Resgate e auxílio de animais silvestres' }]
-        },
-        {
-            id: 'init-21',
-            name: 'Associação Parque Serras de Atibaia',
-            category: 'utilidade_publica',
-            phone: '+5511933055509',
-            reviews: [{ author: 'Associação', rating: 5, comment: 'PIX CNPJ: 43.198.700/0001-45 | Site: parqueserrasdeatibaia1e2.com.br' }]
         }
     ];
 
+    // LISTA COMPLETA DA ABA ÚTEIS
     const usefulPhones = [
         { title: "Polícia Militar / Resgate", category: "Emergência", phone: "190", desc: "Ocorrências e resgate ambiental" },
         { title: "SAMU", category: "Emergência", phone: "192", desc: "Atendimento médico de urgência" },
         { title: "Corpo de Bombeiros", category: "Emergência", phone: "193", desc: "Resgate e incêndios" },
         { title: "Portaria Serras", category: "Administração", phone: "11958334404", desc: "Atendimento de 07h às 19h (R. Serra da Capivara, 150)" },
-        { title: "SAAE Atibaia (Água)", category: "Serviços", phone: "08000112190", desc: "Vazamentos e abastecimento | Whats: (11) 4414-3523" },
-        { title: "Neoenergia Elektro", category: "Serviços", phone: "08007010102", desc: "Energia elétrica (Al. Prof. Lucas Nogueira Garcez, 1287)" },
-        { title: "Associação Serras", category: "Administração", phone: "11933055509", desc: "Atendimento aos moradores do Serras I e II" }
+        { title: "Associação Serras", category: "Administração", phone: "+5511933055509", desc: "PIX: 43.198.700/0001-45 | parqueserrasdeatibaia1e2.com.br" },
+        { title: "SAAE Atibaia (Água e Esgoto)", category: "Serviços Públicos", phone: "08000112190", desc: "Emergências e vazamentos | Whats: (11) 4414-3523" },
+        { title: "Neoenergia Elektro (Energia)", category: "Serviços Públicos", phone: "08007010102", desc: "Falta de luz e reparos (Al. Lucas Nogueira Garcez, 1287)" },
+        { title: "Ecoponto Tanque Atibaia", category: "Descarte de Resíduos", phone: "", desc: "R. João Cifarelli, 2290 (Seg-Sex 7h-17h, Sáb 7h-12h). Aceita entulhos, podas, gesso e madeira." },
+        { title: "Polícia Ambiental (Animais)", category: "Emergência", phone: "190", desc: "Resgate e auxílio de animais silvestres no bairro" }
     ];
 
     let professionals = [...initialProfessionals];
@@ -466,7 +445,7 @@
                     container.innerHTML += `
                         <div onclick="openCategory('${cat.id}')" class="bg-white p-4 rounded-xl shadow-sm flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 border border-emerald-100/60 transition">
                             <span class="text-3xl mb-1">${cat.icon}</span>
-                            <span class="font-medium text-xs text-center text-gray-700">${cat.name}</span>
+                            <span class="font-medium text-xs text-center text-gray-700">${escapeHtml(cat.name)}</span>
                         </div>
                     `;
                 });
@@ -513,7 +492,7 @@
                 homeContainer.innerHTML += `
                     <div onclick="openCategory('${cat.id}')" class="bg-white p-4 rounded-xl shadow-sm flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 border border-emerald-100/60 transition">
                         <span class="text-3xl mb-1">${cat.icon}</span>
-                        <span class="font-medium text-xs text-center text-gray-700">${cat.name}</span>
+                        <span class="font-medium text-xs text-center text-gray-700">${escapeHtml(cat.name)}</span>
                     </div>
                 `;
             }
@@ -522,7 +501,7 @@
                 <div onclick="openCategory('${cat.id}')" class="bg-white p-3.5 rounded-xl shadow-sm flex items-center justify-between cursor-pointer border border-gray-100 hover:bg-emerald-50/50 transition">
                     <div class="flex items-center gap-3">
                         <span class="text-2xl">${cat.icon}</span>
-                        <span class="font-medium text-sm text-gray-700">${cat.name}</span>
+                        <span class="font-medium text-sm text-gray-700">${escapeHtml(cat.name)}</span>
                     </div>
                     <span class="text-emerald-500 font-bold">➔</span>
                 </div>
@@ -535,16 +514,18 @@
         container.innerHTML = '';
 
         usefulPhones.forEach(item => {
+            const cleanPhone = String(item.phone || '').replace(/\D/g, '');
             container.innerHTML += `
                 <div class="bg-white p-3.5 rounded-xl border border-gray-200/80 shadow-2xs flex items-center justify-between gap-2">
                     <div>
-                        <span class="text-[10px] uppercase font-extrabold tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">${item.category}</span>
-                        <h4 class="font-bold text-gray-800 text-sm mt-1">${item.title}</h4>
-                        <p class="text-[11px] text-gray-500">${item.desc}</p>
+                        <span class="text-[10px] uppercase font-extrabold tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">${escapeHtml(item.category)}</span>
+                        <h4 class="font-bold text-gray-800 text-sm mt-1">${escapeHtml(item.title)}</h4>
+                        <p class="text-[11px] text-gray-500">${escapeHtml(item.desc)}</p>
                     </div>
-                    <a href="tel:${item.phone}" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1 shadow-sm transition shrink-0">
+                    ${cleanPhone ? `
+                    <a href="tel:${cleanPhone}" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1 shadow-sm transition shrink-0">
                         📞 Ligar
-                    </a>
+                    </a>` : ''}
                 </div>
             `;
         });
@@ -552,7 +533,7 @@
 
     function populateCategorySelect() {
         const select = document.getElementById('prof-category');
-        select.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        select.innerHTML = categories.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
     }
 
     function openCategory(catId) {
@@ -576,12 +557,9 @@
         } else {
             filtered.forEach((prof, idx) => {
                 const stats = getProfStats(prof);
-                
                 let ratingBadge = `<span class="text-xs text-amber-500 font-bold">⭐ ${stats.average > 0 ? stats.average : '5.0'}</span>`;
-
                 const cleanPhone = String(prof.phone || '').replace(/\D/g, '');
                 const formattedPhone = prof.phone || 'Sem telefone';
-
                 const msg = encodeURIComponent(`Olá! Peguei seu contato pelo Indica Aí (Parque Serras de Atibaia).`);
 
                 listContainer.innerHTML += `
@@ -592,7 +570,7 @@
                                     ${idx + 1}º
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-gray-800 text-sm">${prof.name}</h4>
+                                    <h4 class="font-bold text-gray-800 text-sm">${escapeHtml(prof.name)}</h4>
                                     <div class="flex items-center gap-2 mt-0.5">
                                         ${ratingBadge}
                                         <span class="text-[11px] text-gray-400">• ${stats.count} relato(s)</span>
@@ -603,7 +581,7 @@
 
                         <div class="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
                             <span class="font-semibold text-gray-600 flex items-center gap-1">
-                                📞 ${formattedPhone}
+                                📞 ${escapeHtml(formattedPhone)}
                             </span>
                             <div class="flex gap-2">
                                 <button onclick="openProfDetails('${prof.id}')" class="text-gray-500 bg-gray-100 hover:bg-gray-200 px-2.5 py-1.5 rounded-lg font-medium">
@@ -636,11 +614,14 @@
             <span class="text-xs text-gray-500">(${stats.count} recomendações)</span>
         </div>`;
 
+        const categoryObj = categories.find(c => c.id === prof.category);
+        const categoryName = categoryObj ? categoryObj.name : 'Geral';
+
         document.getElementById('prof-details-content').innerHTML = `
             <div class="flex justify-between items-start">
                 <div>
-                    <h2 class="text-lg font-bold text-gray-800">${prof.name}</h2>
-                    <span class="text-xs text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded">Categoria: ${categories.find(c => c.id === prof.category)?.name || 'Geral'}</span>
+                    <h2 class="text-lg font-bold text-gray-800">${escapeHtml(prof.name)}</h2>
+                    <span class="text-xs text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded">Categoria: ${escapeHtml(categoryName)}</span>
                 </div>
             </div>
             
@@ -666,10 +647,10 @@
                 reviewsList.innerHTML += `
                     <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-2xs space-y-1">
                         <div class="flex justify-between items-center text-xs">
-                            <span class="font-bold text-gray-700">${r.author || 'Morador do Serras'}</span>
-                            <span class="text-amber-500 font-bold">⭐ ${r.rating}.0</span>
+                            <span class="font-bold text-gray-700">${escapeHtml(r.author || 'Morador do Serras')}</span>
+                            <span class="text-amber-500 font-bold">⭐ ${escapeHtml(r.rating)}.0</span>
                         </div>
-                        <p class="text-xs text-gray-600 italic">"${r.comment || 'Indicou este profissional.'}"</p>
+                        <p class="text-xs text-gray-600 italic">"${escapeHtml(r.comment || 'Indicou este profissional.')}"</p>
                     </div>
                 `;
             });
@@ -703,26 +684,52 @@
             date: new Date().toISOString()
         };
 
-        const { error } = await supabaseClient
+        // LÓGICA ANTI-DUPLICIDADE: Busca se o profissional já existe no banco Supabase
+        const { data: existingProfs } = await supabaseClient
             .from('profissionais')
-            .insert([
-                {
-                    nome: profName,
-                    categoria: profCategory,
-                    telefone: profPhone,
-                    indicado_por: authorName,
-                    reviews: [newReview]
-                }
-            ]);
+            .select('*')
+            .ilike('nome', profName);
 
-        if (error) {
-            alert('Erro ao salvar no Supabase. Verifique a conexão.');
-            console.error(error);
+        if (existingProfs && existingProfs.length > 0) {
+            const profExistente = existingProfs[0];
+            const updatedReviews = [...(profExistente.reviews || []), newReview];
+
+            const { error } = await supabaseClient
+                .from('profissionais')
+                .update({ reviews: updatedReviews })
+                .eq('id', profExistente.id);
+
+            if (error) {
+                alert('Erro ao atualizar o relato no Supabase.');
+                console.error(error);
+            } else {
+                alert('Sua avaliação foi adicionada ao profissional existente!');
+                document.getElementById('indicate-form').reset();
+                carregarDadosDoSupabase();
+                switchTab('screen-home');
+            }
         } else {
-            alert('Indicação enviada e salva com sucesso!');
-            document.getElementById('indicate-form').reset();
-            carregarDadosDoSupabase();
-            switchTab('screen-home');
+            const { error } = await supabaseClient
+                .from('profissionais')
+                .insert([
+                    {
+                        nome: profName,
+                        categoria: profCategory,
+                        telefone: profPhone,
+                        indicado_por: authorName,
+                        reviews: [newReview]
+                    }
+                ]);
+
+            if (error) {
+                alert('Erro ao salvar no Supabase. Verifique a conexão.');
+                console.error(error);
+            } else {
+                alert('Indicação enviada e salva com sucesso!');
+                document.getElementById('indicate-form').reset();
+                carregarDadosDoSupabase();
+                switchTab('screen-home');
+            }
         }
     }
     </script>
